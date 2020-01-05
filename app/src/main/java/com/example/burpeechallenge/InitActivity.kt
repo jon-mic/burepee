@@ -15,7 +15,7 @@ class InitActivity : AppCompatActivity() {
         setContentView(R.layout.activity_init)
 
         nameEnterButton.setOnClickListener {
-            var name = editName.text.toString()
+            val name = editName.text.toString()
             d("jomic", "pressed by $name!")
 
             startActivity(Intent(this, HomeActivity::class.java))
