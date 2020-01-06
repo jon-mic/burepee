@@ -8,10 +8,10 @@ import java.sql.Time
 @Entity
 data class Workout(
     @PrimaryKey(autoGenerate = true) var uid: Int,
-    var date: Date,
+    var date: String,
     var athlete: String,
-    var startTime: Time,
-    var finishTime: Time,
+    var startTime: Int,
+    var finishTime: Int,
     var count: Int = 0
     // var mood: Int = 0
 )

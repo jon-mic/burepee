@@ -35,7 +35,9 @@ class WorkoutActivity : AppCompatActivity() {
 
 
         counter.setOnClickListener {
-            this.checkCountdown()
+            if (!this.cdt.finished){
+                this.checkCountdown()
+            }
         }
 
         add10Button.setOnClickListener {

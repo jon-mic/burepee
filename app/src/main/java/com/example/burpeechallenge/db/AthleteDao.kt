@@ -14,8 +14,11 @@ interface AthleteDao {
     @Query("SELECT * FROM athlete WHERE uid IN (:athleteIds)")
     fun loadAllByIds(athleteIds: IntArray): List<Athlete>
 
-    @Query("SELECT * FROM athlete WHERE athlete_name LIKE :athleteName LIMIT 1")
+    @Query("SELECT * FROM athlete WHERE athlete_name LIKE :athleteName")
     fun loadByName(athleteName: String): Athlete
+
+    @Query("SELECT * FROM athlete ORDER BY lastLogin DESC LIMIT 1")
+    fun loadByLatestLogin(): Athlete
 
     @Insert
     fun insertAthlete(athlete: Athlete)

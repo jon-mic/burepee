@@ -15,8 +15,8 @@ interface WorkoutDao {
     @Query("SELECT * FROM workout WHERE uid IN (:workoutIds)")
     fun loadAllByIds(workoutIds: IntArray): List<Workout>
 
-    @Query("SELECT * FROM workout WHERE date == (:date)")
-    fun findByDate(date: Date): Workout
+    @Query("SELECT * FROM workout WHERE date(date) == (:date)")
+    fun findByDate(date: String): Workout
 
     @Insert
     fun insertWorkout(workout: Workout)
