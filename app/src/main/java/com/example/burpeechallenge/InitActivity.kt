@@ -15,23 +15,18 @@ import java.time.Instant.now
 class InitActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-
-
-        val db = Room.databaseBuilder(
-            this,
-            BurpeeDatabase::class.java, "burpee_database"
-        ).allowMainThreadQueries().build()
-
+        val db = BurpeeDatabase.getInstance(this)
         this.startHomeOrCreateAthlete(db)
 
     }
 
     fun startHomeOrCreateAthlete(db: BurpeeDatabase) {
-        val athletes = db.athleteDao().getAll()
-        d("jomic", "$athletes.size")
-        if (athletes.isNotEmpty()) {
+        val athlete = db.athleteDao().loadByLatestLogin()
+        d("jomic", "${athlete}")
+        if (athlete != null) {
+            athlete.lastLogin = (System.currentTimeMillis() / 1000).toInt()
+            db.athleteDao().update(athlete)
             startActivity(Intent(this, HomeActivity::class.java))
         } else {
             setContentView(R.layout.activity_init)
@@ -44,7 +39,6 @@ class InitActivity : AppCompatActivity() {
                         lastLogin = (System.currentTimeMillis() / 1000).toInt()
                     )
                 )
-                d("jomic", "$athletes.size")
                 startHomeOrCreateAthlete(db)
             }
 
