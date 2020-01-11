@@ -1,10 +1,10 @@
 package com.example.burpeechallenge.db
 
+import android.view.View
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import java.sql.Date
 
 @Dao
 interface WorkoutDao {
@@ -13,10 +13,13 @@ interface WorkoutDao {
     fun getAll(): List<Workout>
 
     @Query("SELECT * FROM workout WHERE uid IN (:workoutIds)")
-    fun loadAllByIds(workoutIds: IntArray): List<Workout>
+    fun getAllByIds(workoutIds: IntArray): List<Workout>
 
     @Query("SELECT * FROM workout WHERE date(date) == (:date)")
-    fun findByDate(date: String): Workout
+    fun getByDate(date: String): List<Workout>
+
+    @Query("SELECT SUM(count) FROM workout WHERE date(date) == (:date)")
+    fun getTodaysBurpeeCount(date: String): Int
 
     @Insert
     fun insertWorkout(workout: Workout)

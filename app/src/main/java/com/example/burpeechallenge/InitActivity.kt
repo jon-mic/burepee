@@ -21,6 +21,11 @@ class InitActivity : AppCompatActivity() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        finish()
+    }
+
     fun startHomeOrCreateAthlete(db: BurpeeDatabase) {
         val athlete = db.athleteDao().loadByLatestLogin()
         d("jomic", "${athlete}")

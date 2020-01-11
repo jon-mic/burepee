@@ -1,12 +1,11 @@
 package com.example.burpeechallenge.db
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface AthleteDao {
+
+    // currently designed to hold just one entry/user
 
     @Query("SELECT * FROM athlete")
     fun getAll(): List<Athlete>
@@ -19,6 +18,9 @@ interface AthleteDao {
 
     @Query("SELECT * FROM athlete ORDER BY lastLogin DESC LIMIT 1")
     fun loadByLatestLogin(): Athlete
+
+    @Update                             //Query("UPDATE athlete SET lastLogin = :epoch WHERE")
+    fun update(athlete: Athlete)
 
     @Insert
     fun insertAthlete(athlete: Athlete)

@@ -6,12 +6,24 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_workout.*
 import android.os.Handler
 import android.os.SystemClock.*
+import android.util.Log.d
 import android.widget.Toast
+import com.example.burpeechallenge.db.BurpeeDatabase
+import com.example.burpeechallenge.db.Workout
+import java.time.LocalDateTime
+import java.time.LocalDateTime.now
+import java.time.format.DateTimeFormatter
 
 
 class WorkoutActivity : AppCompatActivity() {
+
+    private var startTime = 0
+    val db = BurpeeDatabase.getInstance(this)
+    private val today = now().format(DateTimeFormatter.ISO_DATE)
     private var count = 0
-    private var started = false
+    private val burpeesPerformedToday = db.workoutDao().getTodaysBurpeeCount(today)
+    private val athleteName = db.athleteDao().loadByLatestLogin().athleteName
+    private var saved = false
 
     private val cdt = object : CountDownTimer(15000, 1000) {
         var finished = false
@@ -21,7 +33,7 @@ class WorkoutActivity : AppCompatActivity() {
 
         override fun onFinish() {
             counter.text = "GO!"
-            this.finished = true
+            finished = true
             chrono.base = elapsedRealtime()
             chrono.start()
         }
@@ -35,27 +47,32 @@ class WorkoutActivity : AppCompatActivity() {
 
 
         counter.setOnClickListener {
-            if (!this.cdt.finished){
+            if (!cdt.finished) {
                 this.checkCountdown()
             }
         }
 
         add10Button.setOnClickListener {
-            if (this.cdt.finished) {
-                count += 10
-                counter.text = count.toString()
+            if (cdt.finished) {
+                if (burpeesPerformedToday + count < 100) {
+                    count += 10
+                    counter.text = (burpeesPerformedToday + count).toString()
+                }
 
-                if (count == 90) {
+                if (burpeesPerformedToday + count == 90) {
                     Toast.makeText(
                         this,
                         "Good job! Only 10 more to go.",
                         Toast.LENGTH_SHORT
                     ).show()
-                } else if (count == 100) {
+                } else if (burpeesPerformedToday + count == 100) {
                     chrono.stop()
+
                     counter.text = "Done in:"
-                    val tmp = Handler()
-                    tmp.postDelayed({ finish() }, 5000)
+                    saveWorkout()
+                    Handler().postDelayed({
+                        finish()
+                    }, 5000)
                 }
             } else {
                 Toast.makeText(
@@ -69,21 +86,37 @@ class WorkoutActivity : AppCompatActivity() {
         }
 
         breakButton.setOnClickListener {
+            saveWorkout()
             finish()
         }
     }
 
 
     private fun checkCountdown() {
-        if (this.started) {
-            this.cdt.onFinish()
-            this.cdt.cancel()
+        if (startTime != 0) {
+            cdt.onFinish()
+            cdt.cancel()
         } else {
             cdt.start()
-            this.started = true
+            startTime = (System.currentTimeMillis() / 1000).toInt()
         }
 
+    }
 
+    fun saveWorkout() {
+        if (!this.saved) {
+            val currentWorkout = Workout(
+                date = today,
+                athlete = athleteName,
+                startTime = startTime,
+                finishTime = (System.currentTimeMillis() / 1000).toInt(),
+                count = count
+            )
+            db.workoutDao().insertWorkout(currentWorkout)
+            this.saved = true
+        } else {
+            d("jomic", "Already saved!")
+        }
     }
 
     override fun onDestroy() {

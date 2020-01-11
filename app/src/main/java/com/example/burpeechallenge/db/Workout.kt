@@ -7,7 +7,7 @@ import java.sql.Time
 
 @Entity
 data class Workout(
-    @PrimaryKey(autoGenerate = true) var uid: Int,
+    @PrimaryKey(autoGenerate = true) var uid: Int=0,
     var date: String,
     var athlete: String,
     var startTime: Int,
